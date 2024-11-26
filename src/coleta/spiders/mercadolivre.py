@@ -10,10 +10,15 @@ class MercadolivreSpider(scrapy.Spider):
         products = response.css('div.ui-search-result__wrapper')
         
         for product in products:
+            
+            prices = product.css('span.andes-money-amount__fraction::text').getall()
+            old_price = prices[0] if len(prices) == 3 else None
+            new_price = prices[1] if len(prices) >= 2 else prices[0]
+            
             yield {
                 'name': product.css('a::text').get(),
-                'old_price': product.css('span.andes-money-amount__fraction::text').get(),
-                'new_price': product.css('span.andes-money-amount__fraction::text').get(),
+                'old_price': old_price,
+                'new_price': new_price,
                 'reviews_rating': product.css('span.poly-reviews__rating::text').get(),
                 'reviews_total': product.css('span.poly-reviews__total::text').get()
             }
